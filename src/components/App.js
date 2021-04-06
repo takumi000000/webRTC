@@ -1,4 +1,5 @@
-import React from 'react';
+import React, {useState} from 'react';
+// {useState}は関数の中に状態を持たせる
 
 import InputFormLocal from './InputFormLocal';
 import InputFormRemote from './InputFormRemote';
@@ -21,11 +22,17 @@ const getMedia = async() => {
 
 getMedia();
 
-
 const App = () => {
+  const [localPeerName, setLocalPeerName] = useState('');
+  const [remotePeerName, setRemotePeerName] = useState('');
+
   return <>
-  <InputFormLocal />
-  <InputFormRemote />
+  <InputFormLocal 
+    localPeerName={localPeerName}
+    setLocalPeerName={setLocalPeerName}/>
+  <InputFormRemote 
+    remotePeerName={remotePeerName}
+    setRemotePeerName={setRemotePeerName}/>
   </>;
 };
 

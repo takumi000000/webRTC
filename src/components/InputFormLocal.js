@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -44,9 +44,30 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SignIn() {
+export default function SignIn({ localPeerName, setLocalPeerName }) {
   const label = 'あなたの名前';
   const classes = useStyles();
+  const [disabled, setDisabled] = useState(true);
+  const [name, setName] = useState('');
+  const [isComposed, setIsComposed] = useState(false);
+
+  useEffect(() => {
+const disabled = name === '';
+setDisabled(disabled);
+  }, [name]);
+
+  // nameを確定する
+  const initializeLocalPeer = useCallback ((e) => {
+    console.log('initializeLocalPeer');
+    setLocalPeerName(name); //localPeerNameにnameを入れる
+    e.preventDefault();
+  }, [name, setLocalPeerName]);
+  // ↑依存するものを配列で入れてキャッシュする  =>warningを消す(動作も早くなる)
+
+  console.log({ name });
+  // console.log(デバッグ確認)は消していい
+
+  if (localPeerName !== '') return <></>;
 
   return (
     <Container component="main" maxWidth="xs">
@@ -66,13 +87,25 @@ export default function SignIn() {
             required
             fullWidth
             name="name"
+            onChange={(e) => setName(e.target.value)}
+            // 下2行で変換後のEnterでNameを確定させないようにする
+            onCompositionEnd={() => setIsComposed(false)}
+            onCompositionStart={() => setIsComposed(true)}
+            onKeyDown={(e) =>{
+              if (isComposed) return; //変換後のEnterでNameを確定させないようにする
+              if (e.target.value === '') return;  //name(value)が何もないときEnterを押しても何も返さない
+              if (e.key === 'Enter') initializeLocalPeer(e);
+            }}
             label={label}
+            value={name}
           />
           <Button
             type="submit"
             fullWidth
             variant="contained"
             color="primary"
+            onClick={(e) => {initializeLocalPeer(e);}}
+            disabled={disabled}
             className={classes.submit}
           >
             決定
