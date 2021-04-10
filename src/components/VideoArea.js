@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const VideoArea = ({ localPeerName, RemotePeerName }) => {
+const VideoArea = ({ localPeerName, remotePeerName }) => {
   const classes = useStyles();
 
   return (
@@ -28,6 +28,7 @@ const VideoArea = ({ localPeerName, RemotePeerName }) => {
           <VideoLocal name={localPeerName} />
         </Grid>
         <Grid item xs={12} sm={6}>
+          <VideoRemote name={remotePeerName} />
         </Grid>
       </Grid>
     </div>
