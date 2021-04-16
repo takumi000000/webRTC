@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';  // {useState}は関数の中に状態を持たせる
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SignIn({ rtcClient, setRtcClient }) {
+export default function SignIn({ rtcClient }) {
   const label = 'あなたの名前';
   const classes = useStyles();
   const [disabled, setDisabled] = useState(true);
@@ -60,11 +60,11 @@ export default function SignIn({ rtcClient, setRtcClient }) {
   const initializeLocalPeer = useCallback (
     (e) => {
     rtcClient.localPeerName = name;
-    setRtcClient(rtcClient);
-    console.log({ rtcClient });
+    rtcClient.setRtcClient();
     e.preventDefault();
   }, 
-  [name, rtcClient, setRtcClient]);
+  [name, rtcClient]
+  );
   // ↑依存するものを配列で入れてキャッシュする  =>warningを消す(動作も早くなる)
 
   if (rtcClient.localPeerName !== '') return <></>;
