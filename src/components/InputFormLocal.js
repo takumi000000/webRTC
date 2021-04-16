@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SignIn({ localPeerName, setLocalPeerName }) {
+export default function SignIn({ rtcClient }) {
   const label = 'あなたの名前';
   const classes = useStyles();
   const [disabled, setDisabled] = useState(true);
@@ -52,22 +52,21 @@ export default function SignIn({ localPeerName, setLocalPeerName }) {
   const [isComposed, setIsComposed] = useState(false);
 
   useEffect(() => {
-const disabled = name === '';
-setDisabled(disabled);
+    const disabled = name === '';
+    setDisabled(disabled);
   }, [name]);
 
   // nameを確定する
-  const initializeLocalPeer = useCallback ((e) => {
-    console.log('initializeLocalPeer');
-    setLocalPeerName(name); //localPeerNameにnameを入れる
+  const initializeLocalPeer = useCallback (
+    (e) => {
+    rtcClient.localPeerName = name;
+    console.log({ rtcClient });
     e.preventDefault();
-  }, [name, setLocalPeerName]);
+  }, 
+  [name, rtcClient]);
   // ↑依存するものを配列で入れてキャッシュする  =>warningを消す(動作も早くなる)
 
-  console.log({ name });
-  // console.log(デバッグ確認)は消していい
-
-  if (localPeerName !== '') return <></>;
+  if (rtcClient.localPeerName !== '') return <></>;
 
   return (
     <Container component="main" maxWidth="xs">
