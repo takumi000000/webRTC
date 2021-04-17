@@ -1,14 +1,15 @@
 import FirebaseSignallingClient from './FirebaseSignallingClient';
 
 export default class RtcClient {
-  constructor(setRtcClient) {
+  constructor(remoteVideoRef, setRtcClient) {
     const config = {
       iceServers: [{ urls: 'stun:stun.stunprotocol.org' }]
     };
     this.rtcPeerConnection = new RTCPeerConnection(config);
-    this.FirebaseSignallingClient = new FirebaseSignallingClient();
+    this.firebaseSignallingClient = new FirebaseSignallingClient();
     this.localPeerName = '';
     this.remotePeerName = '';
+    this.remoteVideoRef = remoteVideoRef;
     this._setRtcClient = setRtcClient;
     this.mediaStream = null;
   }
@@ -41,7 +42,7 @@ export default class RtcClient {
     this.rtcPeerConnection.addTrack(this.audioTrack, this.mediaStream);
   }
 
-  addVideoClient() {
+  addVideoTrack() {
     this.rtcPeerConnection.addTrack(this.videoTrack, this.mediaStream);
   }
 
@@ -50,13 +51,13 @@ export default class RtcClient {
   }
 
   get videoTrack() {
-    return this.mediaStream.getVideoTracks() [0];
+    return this.mediaStream.getVideoTracks()[0];
   }
 
   startListening(localPeerName) {
     this.localPeerName = localPeerName;
     this.setRtcClient();
-    this.FirebaseSignallingClient.database
+    this.firebaseSignallingClient.database
   .ref(localPeerName)
   .on('value', (snapshot) => { //()はどこを監視するか
     const data = snapshot.val();  //const dataに格納される

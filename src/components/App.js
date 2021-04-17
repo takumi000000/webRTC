@@ -11,7 +11,7 @@ import useRtcClient from './hooks/useRtcClient';
 const App = () => { 
   const rtcClient = useRtcClient();
 
-  return(
+  return (
     <>
       <InputForms rtcClient={rtcClient} />
       <VideoArea rtcClient={rtcClient} />

@@ -13,7 +13,7 @@ const VideoLocal = ({ rtcClient }) => {
     const getMedia = () => {
       try {
         currentVideoRef.srcObject = mediaStream;
-      } catch(err) {
+      } catch (err) {
         /* エラーを処理 */
         console.error(err);
       }
@@ -23,7 +23,9 @@ const VideoLocal = ({ rtcClient }) => {
   }, [currentVideoRef, mediaStream]);
 
   return (
-  <Video isLoacl={true} name={rtcClient.localPeerName} videoRef={videoRef} />
+  <Video isLocal={true} name={rtcClient.localPeerName}
+  rtcClient={rtcClient}
+  videoRef={videoRef} />
   );
 };
 
