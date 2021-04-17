@@ -51,14 +51,14 @@ export default function SignIn({ rtcClient }) {
   const [name, setName] = useState('');
   const [isComposed, setIsComposed] = useState(false);
 
-  useEffect(() => {
-    const disabled = name === '';
-    setDisabled(disabled);
-      }, [name]);
+    useEffect(() => {
+      const disabled = name === '';
+      setDisabled(disabled);
+    }, [name]);
 
-    const initializeRemotePeer = useCallback
-      ((e) => {
-      rtcClient.connect(name);
+    const initializeRemotePeer = useCallback(
+      async (e) => {
+      await rtcClient.connect(name);
       e.preventDefault();
     },
     [name, rtcClient]
@@ -88,10 +88,10 @@ export default function SignIn({ rtcClient }) {
             onChange={(e) => setName(e.target.value)}
             onCompositionEnd={() => setIsComposed(false)}
             onCompositionStart={() => setIsComposed(true)}
-            onKeyDown={(e) =>{
+            onKeyDown={async (e) =>{
               if (isComposed) return; //変換後のEnterでNameを確定させないようにする
               if (e.target.value === '') return;  //name(value)が何もないときEnterを押しても何も返さない
-              if (e.key === 'Enter') initializeRemotePeer(e);
+              if (e.key === 'Enter') await initializeRemotePeer(e);
             }}
             value={name}
             label={label}
@@ -101,7 +101,7 @@ export default function SignIn({ rtcClient }) {
             fullWidth
             variant="contained"
             color="primary"
-            onClick={(e) => initializeRemotePeer(e)}
+            onClick={async (e) => await initializeRemotePeer(e)}
             disabled={disabled}
             className={classes.submit}
           >
