@@ -97,12 +97,38 @@ export default class RtcClient {
     this.setRtcClient();
   }
 
+  async answer(sender, sessionDescription) {
+    try {
+      this.remotePeerName = sender;
+      this.setOnicecandidateCallback();
+      this.setOntrack();
+      await this.setRemoteDescription(sessionDescription);
+      const answer = await this.rtcPeerConnection.createAnswer();
+      this.rtcPeerConnection.setLocalDescription(answer);
+      await this.sendAnswer();
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
   async connect(remotePeerName) {
     this.remotePeerName = remotePeerName;
     this.setOnicecandidateCallback();
     this.setOntrack();
     await this.offer();
     this.setRtcClient();
+  }
+
+  async setRemoteDescription(sessionDescription) {
+    await this.rtcPeerConnection.setRemoteDescription(sessionDescription);
+  }
+
+  async sendAnswer() {
+    this.firebaseSignallingClient.setPeerNames(
+      this.localPeerName,
+      this.remotePeerName
+    );
+    await this.firebaseSignallingClient.sendAnswer(this.localDescription);
   }
 
   get localDescription() {
@@ -123,8 +149,18 @@ export default class RtcClient {
     this.setRtcClient();
     this.firebaseSignallingClient.database
   .ref(localPeerName)
-  .on('value', (snapshot) => { //()はどこを監視するか
+  .on('value', async (snapshot) => { //()はどこを監視するか
     const data = snapshot.val();  //const dataに格納される
+    if (data === null) return;
+    console.log({ data });
+    const { sender, sessionDescription, type } = data;
+    switch(type) {
+      case 'offer':
+      await this.answer(sender, sessionDescription);
+      break;
+      default:
+      break;
+    }
     });
   }
 }
