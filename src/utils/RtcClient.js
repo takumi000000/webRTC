@@ -128,9 +128,18 @@ export default class RtcClient {
       this.localPeerName,
       this.remotePeerName
     );
+
     await this.firebaseSignallingClient.sendAnswer(this.localDescription);
   }
 
+  async saveReceivedSessionDescription(sessionDescription) {
+    try {
+      await this.setRemoteDescription(sessionDescription);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  
   get localDescription() {
     return this.rtcPeerConnection.localDescription.toJSON();
   }
@@ -144,9 +153,10 @@ export default class RtcClient {
     };
   }
 
-  startListening(localPeerName) {
+  async startListening(localPeerName) {
     this.localPeerName = localPeerName;
     this.setRtcClient();
+    await this.firebaseSignallingClient.remove(localPeerName);
     this.firebaseSignallingClient.database
   .ref(localPeerName)
   .on('value', async (snapshot) => { //()はどこを監視するか
@@ -158,6 +168,9 @@ export default class RtcClient {
       case 'offer':
       await this.answer(sender, sessionDescription);
       break;
+      case 'answer':
+        await this.saveReceivedSessionDescription(sessionDescription);
+        break;
       default:
       break;
     }

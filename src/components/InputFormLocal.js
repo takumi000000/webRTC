@@ -58,8 +58,8 @@ export default function SignIn({ rtcClient }) {
 
   // nameを確定する
   const initializeLocalPeer = useCallback (
-    (e) => {
-      rtcClient.startListening(name);
+    async (e) => {
+      await rtcClient.startListening(name);
     e.preventDefault();
   }, 
   [name, rtcClient]
@@ -90,10 +90,10 @@ export default function SignIn({ rtcClient }) {
             // 下2行で変換後のEnterでNameを確定させないようにする
             onCompositionEnd={() => setIsComposed(false)}
             onCompositionStart={() => setIsComposed(true)}
-            onKeyDown={(e) =>{
+            onKeyDown={async (e) =>{
               if (isComposed) return; //変換後のEnterでNameを確定させないようにする
               if (e.target.value === '') return;  //name(value)が何もないときEnterを押しても何も返さない
-              if (e.key === 'Enter') initializeLocalPeer(e);
+              if (e.key === 'Enter') await initializeLocalPeer(e);
             }}
             label={label}
             value={name}
@@ -103,7 +103,7 @@ export default function SignIn({ rtcClient }) {
             fullWidth
             variant="contained"
             color="primary"
-            onClick={(e) => initializeLocalPeer(e)}
+            onClick={async (e) => await initializeLocalPeer(e)}
             disabled={disabled}
             className={classes.submit}
           >
