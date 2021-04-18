@@ -104,7 +104,7 @@ export default class RtcClient {
       this.setOntrack();
       await this.setRemoteDescription(sessionDescription);
       const answer = await this.rtcPeerConnection.createAnswer();
-      this.rtcPeerConnection.setLocalDescription(answer);
+      await this.rtcPeerConnection.setLocalDescription(answer);
       await this.sendAnswer();
     } catch (e) {
       console.error(e)
@@ -144,11 +144,20 @@ export default class RtcClient {
     return this.rtcPeerConnection.localDescription.toJSON();
   }
 
+  async addIceCandidate(candidate) {
+    try {
+      const iceCandidate = new RTCIceCandidate(candidate);
+      await this.rtcPeerConnection.addIceCandidate(iceCandidate);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
   setOnicecandidateCallback() {
-    this.rtcPeerConnection.onicecandidate = ({ candidate }) => {
+    this.rtcPeerConnection.onicecandidate = async ({ candidate }) => {
       if (candidate) {
         console.log({ candidate })
-      // candidateを通知
+        await this.firebaseSignallingClient.sendCandidate(candidate.toJSON());
       }
     };
   }
@@ -162,8 +171,9 @@ export default class RtcClient {
   .on('value', async (snapshot) => { //()はどこを監視するか
     const data = snapshot.val();  //const dataに格納される
     if (data === null) return;
+
     console.log({ data });
-    const { sender, sessionDescription, type } = data;
+    const { candidate, sender, sessionDescription, type } = data;
     switch(type) {
       case 'offer':
       await this.answer(sender, sessionDescription);
@@ -171,7 +181,11 @@ export default class RtcClient {
       case 'answer':
         await this.saveReceivedSessionDescription(sessionDescription);
         break;
+      case 'candidate':
+        await this.addIceCandidate(candidate);
+        break;
       default:
+        this.setRtcClient();
       break;
     }
     });
