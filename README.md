@@ -2,8 +2,6 @@
 
 ## Node のインストール方法
 
-本アプリケーションは [Node.js](https://nodejs.org/) を前提としています。macOS の場合だと以下の手順で導入できます。Node のバージョンは`.node-version`を参照し、同じものを使用してください。
-
     $ wget -P /tmp https://nodejs.org/download/release/v14.15.1/node-v14.15.1.pkg
     $ sudo installer -pkg /tmp/node-v14.15.1.pkg -target /
     installer: Package name is Node.js
@@ -14,8 +12,7 @@
 
 ## アプリケーションの起動方法(Docker を使用しない場合)
 
-本プロジェクトは、[create-react-app](https://reactjs.org/docs/create-a-new-react-app.html) により作成したアプリケーションから React の学習に最低限必要な機能のみを厳選し、軽量化したものです。
-以下の手順でアプリケーションを起動できます。
+以下の手順でアプリケーションを起動。
 
     $ wget https://github.com/DiveIntoHacking/react-starter-kit-in-javascript-with-node-v14.15.1/archive/v1.2.tar.gz
     $ tar zxvf v1.2.tar.gz
